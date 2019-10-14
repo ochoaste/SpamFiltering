@@ -101,6 +101,33 @@ def email_Type(file):
         return 0
 
 size = 1
+
+import matplotlib.pyplot as plt
+from matplotlib import style
+style.use('ggplot')
+
+'''
+class SVM:
+    def __init__(self, visualization = True):
+        self.visualization = visualization
+        self.colors = {'spam': 'r', 'ham': 'b'}
+        if self.visualization:
+            self.fig = plt.figure{}
+            self.ax = self.fig.add_subplot(1,1,1)
+            
+    #training
+    def fit(self, data):
+        self.data = data
+        opt_dict = {}
+
+        #transform 
+
+    def predict(self, features):
+        classification = np.sign(np.dot(np.array(features), self.w)+self.b)
+
+    return classification
+    '''
+    
 print('Equal amount of spam and ham emails used for training: ' , size)
     
 training_files_s = labels['spam'][:size] # first 1000 spam files
@@ -120,7 +147,7 @@ def precision (tp, fp):
     return tp / tpfp
 
 def f1_score (precision, recall):
-    return 2*((precision * recall)/precision + recall)
+    return 2*((precision * recall)/(precision + recall))
     
 def main():
     true_positive = 0
