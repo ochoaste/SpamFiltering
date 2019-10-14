@@ -1,5 +1,5 @@
 import numpy as np
-import sklearn
+#import sklearn
 import os
 import re
 import string
@@ -99,71 +99,35 @@ def email_Type(file):
         return 1
     else:
         return 0
-'''        
-    tempfile = f1.readlines()
-    f1.close()
 
-    for current in tempfile:
-        if current == file:
-            email_type = tempfile[current-1]
-            if email_type == 0: #spam
-                return 0
-            else:
-                return 1 #ham
-    '''
-
+size = 1
+print('Equal amount of spam and ham emails used for training: ' , size)
     
-training_files_s = labels['spam'][:1000] # first 1000 spam files
-training_files_h = labels['ham'][:1000] # first 1000 ham files
+training_files_s = labels['spam'][:size] # first 1000 spam files
+training_files_h = labels['ham'][:size] # first 1000 ham files
+
 all_contents_spam = reading_files(training_files_s)
 all_contents_ham = reading_files(training_files_h)
 
 
-'''
-# reading all training spam files #
-all_contents_spam = dict()
-spam_words = 0
-for t in training_files_s:
-    fname = os.path.join(path, t) # changes paths to get data
-    x_file = open(os.path.join(path, t), 'rb') # opens in byte code to read it   
-    lines = x_file.readlines()
-    x_file.close()
-    local_words = clean_data(lines)
-    for lw in local_words.keys():
-        if lw not in all_contents_spam.keys():
-            all_contents_spam[lw] = local_words[lw]
-        else:
-            all_contents_spam[lw] += local_words[lw]
-        spam_words = local_words[lw]
-    #print(local_words)
-print(all_contents_spam)
+def recall (tp, fn):
+    total = tp + fn
 
+    return tp/total
 
-# reading all training ham files #
-all_contents_ham = dict()
-ham_words = 0
-for t in training_files_h:
-    fname = os.path.join(path, t)
-    x_file = open(os.path.join(path, t), 'rb')    
-    lines = x_file.readlines()
-    x_file.close()
-    local_words = clean_data(lines)
-    for lw in local_words.keys():
-        if lw not in all_contents_ham.keys():
-            all_contents_ham[lw] = local_words[lw]
-        else:
-            all_contents_ham[lw] += local_words[lw]
-        ham_words += local_words[lw]
-    #print(local_words)
-print(all_contents_ham)
-'''
+def precision (tp, fp):
+    tpfp = tp + fp
+    return tp / tpfp
 
-
+def f1_score (precision, recall):
+    return 2*((precision * recall)/precision + recall)
+    
 def main():
     true_positive = 0
     true_negative = 0
     false_negative = 0
     false_positive = 0
+    
     #### building vocabulary ###
     all_words = dict()
     total_words = 0
@@ -177,18 +141,23 @@ def main():
         else:
             all_words[w] = all_contents_ham[w]
         total_words += all_contents_ham[w]
-    print('All unique words: ', len(all_words))
-    print('total words: ', total_words)
+    #print('All unique words: ', len(all_words))
+    #print('total words: ', total_words)
 
+    test_start = size + 1
+    test_range = 2000
 
-    list_of_test_files = labels['spam'][1001:1021] + labels['ham'][1001:1021]
-    #list_of_test_files = random.shuffle(list_of_test_files)
+    print('Amount of emails tested: ', test_range)
+    
+    list_of_test_files = labels['spam'][test_start:test_start+test_range] + labels['ham'][test_start:test_start+test_range]
+    random.shuffle(list_of_test_files)
     #print(list_of_test_files)
+    
     for file in range(len(list_of_test_files)):
         #test_file = labels['spam'][35810] # testing with a spam
-        print(file)
+        #print(file)
         test_file = list_of_test_files[file]
-        print(test_file)
+        #print(test_file)
         fname = os.path.join(path, test_file)
         x_file = open(os.path.join(path, test_file), 'rb')    
         lines = x_file.readlines()
@@ -209,27 +178,27 @@ def main():
                     probability_ham *= (all_contents_ham[lw]/all_words[lw])
 
 
-        print('spam probability: ', probability_spam)
-        print('ham probability: ', probability_ham)
+        #print('spam probability: ', probability_spam)
+        #print('ham probability: ', probability_ham)
         
         
         if(probability_spam > probability_ham):
-            print('We THINK this is spam!')
+            #print('We THINK this is spam!')
             if email_Type(test_file) == 0:
-               print('This is actually spam', '\n')
+            #   print('This is actually spam', '\n')
                true_negative += 1
             else:
-               print('This is actually ham', '\n')
+             #  print('This is actually ham', '\n')
                false_negative += 1
             
         else:
-            print('We THINK this is ham :)')
+            #print('We THINK this is ham :)')
             if email_Type(test_file) == 1:
-               print('This is actually ham', '\n')
+             #  print('This is actually ham', '\n')
                true_positive += 1
                           
             else:
-               print('This is actually spam', '\n')
+              # print('This is actually spam', '\n')
                false_positive += 1
             
     print('Total true negatives: ', true_negative)
@@ -237,7 +206,12 @@ def main():
     print('Total false negatives: ', false_negative)
     print('Total false positives: ', false_positive)
 
-
+    recal = recall(true_positive, false_negative)
+    precis = precision(true_positive, false_positive)
+    
+    print('The recall is: ', recal)
+    print('The precision is: ', precis)
+    print('The f1 score is: ', f1_score(precis, recal))
 
 if __name__== '__main__':
     main()
