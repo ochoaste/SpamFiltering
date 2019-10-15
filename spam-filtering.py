@@ -99,17 +99,29 @@ def email_Type(file):
     else:
         return 0
 
-size = 10000
+total = 5000
+separate = 2000
+# size = 1000
 
-import matplotlib.pyplot as plt
-from matplotlib import style
-style.use('ggplot')
+print('Amount of spam emails used for training: ', separate)
+print('Amount of ham emails used for training: ', total-separate)
 
     
-print('Equal amount of spam and ham emails used for training: ' , size)
+#print('Equal amount of spam and ham emails used for training: ' , size)
     
-training_files_s = labels['spam'][:size] # first 1000 spam files
-training_files_h = labels['ham'][:size] # first 1000 ham files
+#training_files_s = labels['spam'][:size] # first 1000 spam files
+#training_files_h = labels['ham'][:size] # first 1000 ham files
+
+training_files_s = labels['spam'][:-1]
+random.shuffle(training_files_s)
+training_files_s = labels['spam'][:separate]
+
+
+training_files_h = labels['ham'][:-1]
+random.shuffle(training_files_h)
+training_files_h = labels['ham'][:(total-separate)]
+
+
 
 all_contents_spam = reading_files(training_files_s)
 all_contents_ham = reading_files(training_files_h)
@@ -149,7 +161,7 @@ def main():
     #print('All unique words: ', len(all_words))
     #print('total words: ', total_words)
 
-    test_start = size + 1
+    test_start = total + 1
     test_range = 1000
 
     print('Equal amount of spam and ham emails tested: ', test_range)
